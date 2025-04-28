@@ -139,19 +139,19 @@ class DataGenerator:
                 Y_abs=[]
                 Y_phase=[]
                 for j in range(self.chunk.shape[0]):
-                    x1=tf.convert_to_tensor(np.log(self.chunk.iloc[j, 0] * (self.chunk.iloc[j, 1] + 10000)) / 25, dtype=tf.float32),
-                    x2=tf.convert_to_tensor(np.log(self.chunk.iloc[j, 0] * (self.chunk.iloc[j, 2] + 10000)) / 25, dtype=tf.float32),
-                    x3=tf.keras.ops.reshape(tf.convert_to_tensor(np.log(self.chunk.iloc[j, 4:3*self.line_num+4:3] + 1) / 10, dtype=tf.float32), (-1,1)),
-                    x4=tf.keras.ops.reshape(tf.convert_to_tensor((self.chunk.iloc[j, 5:3*self.line_num+5:3] + np.pi) / (2 * np.pi), dtype=tf.float32), (-1,1))
+                    x1=tf.reshape(tf.convert_to_tensor(np.log(self.chunk.iloc[j, 0] * (self.chunk.iloc[j, 1] + 10000)) / 25, dtype=tf.float32), (1,1))
+                    x2=tf.reshape(tf.convert_to_tensor(np.log(self.chunk.iloc[j, 0] * (self.chunk.iloc[j, 2] + 10000)) / 25, dtype=tf.float32), (1,1))
+                    x3=tf.convert_to_tensor(np.log(self.chunk.iloc[j, 3:3*self.line_num+4:3] + 1) / 10, dtype=tf.float32)
+                    x4=tf.convert_to_tensor((self.chunk.iloc[j, 4:3*self.line_num+5:3] + np.pi) / (2 * np.pi), dtype=tf.float32)
+                    x4=tf.keras.ops.reshape(x4, (-1, 1))
+                    x3=tf.keras.ops.reshape(x3, (-1, 1))
                     repeat_count = tf.shape(x3)[0]
-                    x1=tf.expand_dims(x1, axis=0)
-                    x2=tf.expand_dims(x2, axis=0)
                     x1_repeated = tf.keras.ops.repeat(x1, repeat_count, axis=0)
                     x2_repeated = tf.keras.ops.repeat(x2, repeat_count, axis=0)
                     x = tf.concat([x1_repeated, x2_repeated, x3, x4], axis=1)
                     X.append(x)
                     y_abs = tf.stack([tf.convert_to_tensor(np.log(self.chunk.iloc[j, 3*self.line_num + 6] + 1) / 10, dtype=tf.float32),
-                                      tf.convert_to_tensor(chunk.iloc[j, 3*self.line_num + 8], dtype=tf.float32)
+                                      tf.convert_to_tensor(self.chunk.iloc[j, 3*self.line_num + 8], dtype=tf.float32)
                     ])
                     y_phase = tf.stack([tf.convert_to_tensor((self.chunk.iloc[j, 3*self.line_num + 7] + np.pi) / (2 * np.pi), dtype=tf.float32),
                                         tf.convert_to_tensor(self.chunk.iloc[j, 3*self.line_num + 8], dtype=tf.float32)

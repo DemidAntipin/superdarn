@@ -35,11 +35,12 @@ try:
     for file in files:
         for chunk in pd.read_csv(file, compression='bz2', header=None, sep=r" ", chunksize=1000):
             chunk=chunk.iloc[:, :-1] # в данных лишний пробел в конце каждой строки
-            data=create_tf_dataset(chunk, DatasetType.DECODER_SEQUENCE)
-            train_data, val_data = tf.keras.utils.split_dataset(data, left_size=0.8)
-            train_data = train_data.batch(32)
-            val_data = val_data.batch(32)
-            seq_decoder.fit(train_data, validation_data=val_data, epochs=30, callbacks=[es])
+            for i in range(99):
+              data=create_tf_dataset(chunk, DatasetType.DECODER_SEQUENCE, i)
+              train_data, val_data = tf.keras.utils.split_dataset(data, left_size=0.8)
+              train_data = train_data.batch(32)
+              val_data = val_data.batch(32)
+              seq_decoder.fit(train_data, validation_data=val_data, epochs=30, callbacks=[es])
 except Exception as e:
     print(e)
 seq_decoder.save("Models/decoder_seq.keras")
